@@ -1,4 +1,6 @@
 /*
+  CONTAINS HACKS BY ALAN
+
   html2canvas v0.30 <http://html2canvas.hertzen.com>
   Copyright (c) 2011 Niklas von Hertzen. All rights reserved.
   http://www.twitter.com/niklasvh
@@ -42,9 +44,10 @@ html2canvas.Util = {};
 
 html2canvas.Util.backgroundImage = function (src) {
 
-    if (/data:image\/.*;base64,/i.test( src ) || /^(-webkit|-moz|linear-gradient|-o-)/.test( src )) {
+    if (/data:image\/.*;base64,/i.test( src ) || /^(-webkit|-moz|progid|gradient|-o-)/i.test( src )) {
         return src;
     }
+    //console.log(src);
 
     if (src.toLowerCase().substr( 0, 5 ) === 'url("') {
         src = src.substr( 5 );
@@ -157,7 +160,9 @@ html2canvas.Generate = {};
 
 
 html2canvas.Generate.Gradient = function(src, bounds) {
-    var canvas = document.createElement('canvas'),
+    return; // balupton: this function fails in chrome and firefox
+
+    var canvas = top.document.createElement('canvas'),
     ctx = canvas.getContext('2d'),
     tmp,
     p0 = 0,
@@ -308,9 +313,9 @@ html2canvas.Parse = function (element, images, opts) {
     opts = opts || {};
 
     // select body by default
-    if (element === undefined) {
-        element = document.body;
-    }
+   // if (element === undefined) {
+        element = top.document.body;
+//    }
 
 
     var support = {
@@ -318,7 +323,7 @@ html2canvas.Parse = function (element, images, opts) {
 
     },
     options = {
-        iframeDefault: "default",
+        iframeDefault: "transparent",
         ignoreElements: "IFRAME|OBJECT|PARAM",
         useOverflow: true,
         letterRendering: false
@@ -470,7 +475,7 @@ html2canvas.Parse = function (element, images, opts) {
 
 
         // TODO add another image
-        img.src = "http://html2canvas.hertzen.com/images/8.jpg";
+        img.src = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
         img.width = 1;
         img.height = 1;
 
@@ -1399,7 +1404,11 @@ html2canvas.Parse = function (element, images, opts) {
                 bgcolor = options.iframeDefault;
             }
         }
+        if(el.nodeName == "BODY" && (bgcolor=="rgba(0, 0, 0, 0)" || bgcolor=="transparent" ))
+        {
+          bgcolor="rgb(255,255,255)"
 
+        }
         // draw base element bgcolor
 
         bgbounds = {
@@ -1647,7 +1656,7 @@ html2canvas.Preload = function(element, opts){
         script = doc.createElement("script");
         script.setAttribute("src", scriptUrl);
         script.setAttribute("type", "text/javascript");
-        window.document.body.appendChild(script);
+        top.document.body.appendChild(script);
 
     /*
 
@@ -1688,7 +1697,7 @@ html2canvas.Preload = function(element, opts){
 
     function getImages (el) {
 
-
+        if(el.id=="_BH_frame") return
 
         // if (!this.ignoreRe.test(el.nodeName)){
         //
@@ -1780,10 +1789,10 @@ html2canvas.Preload = function(element, opts){
 
                 }else if ( options.proxy ){
                     //    console.log('b'+src);
-                    images.push( src );
-                    img = new Image();
-                    proxyGetImage( src, img );
-                    images.push( img );
+                //    images.push( src );
+                  //  img = new Image();
+                  //  proxyGetImage( src, img );
+                  //  images.push( img );
                 }
             }
 
@@ -1877,7 +1886,7 @@ html2canvas.Renderer = function(parseQueue, opts){
     },
     queue = [],
     canvas,
-    doc = document;
+    doc = top.document;
 
     options = html2canvas.Util.Extend(opts, options);
 
@@ -2244,6 +2253,3 @@ html2canvas.Renderer = function(parseQueue, opts){
 
 
 };
-
-
-
